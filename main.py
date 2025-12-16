@@ -5,6 +5,8 @@ import random
 from pathlib import Path
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 BASE = Path(__file__).parent
 
 LEVEL_TO_CHOICES = {"easy": 3, "normal": 4, "hard": 5}
