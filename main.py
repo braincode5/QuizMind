@@ -34,6 +34,12 @@ QUESTIONS = {
             "question": "Was ist die Hauptstadt von Frankreich?",
             "correct": "Paris",
             "wrong": ["Marseille", "Lyon", "Touluse", "Nizza", "Nantes"]
+
+        },
+        {   "id": "geo_005",
+            "question": "qe sa dite nuk punon tek TFC?",
+            "correct": "17",
+            "wrong": ["2", "8","15", "14"]
         }
     ],
     "Wissen": [
