@@ -13,12 +13,7 @@ function show() {
   if (i >= questions.length) return;
   const q = questions[i];
   document.getElementById("q").textContent = q.question;
-  const d = document.getElementById("opts");
-  d.innerHTML = "";
-  q.options.forEach((o, idx) => {
-    const b = document.createElement("button");
-    b.textContent = o;
-    const img = document.getElementById("qimg");
+  const img = document.getElementById("qimg");
 if (q.image) {
   img.src = q.image;
   img.style.display = "block";
@@ -26,7 +21,12 @@ if (q.image) {
   img.style.display = "none";
   img.src = "";
 }
-
+  const d = document.getElementById("opts");
+  d.innerHTML = "";
+  
+  q.options.forEach((o, idx) => {
+    const b = document.createElement("button");
+    b.textContent = o;
     b.onclick = () => {
       document.getElementById("res").textContent =
         idx === q.correctIndex ? "✅ Richtig" : "❌ Falsch";

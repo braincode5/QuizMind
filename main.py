@@ -14,6 +14,7 @@ QUESTIONS = {
         {
             "id": "geo_001",
             "question": "Was ist die Hauptstadt von Deutschland?",
+            "image": "/static/images/berlin.png",
             "correct": "Berlin",
             "wrong": ["München", "Hamburg", "Köln", "Frankfurt", "Stuttgart"]
         },
@@ -67,6 +68,7 @@ def build_options(q, level):
         "id": q["id"],
         "category": q["category"],
         "question": q["question"],
+        "image": q.get("image"),
         "options": opts,
         "correctIndex": opts.index(q["correct"])
     }
