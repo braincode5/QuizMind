@@ -3,6 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>QuizMind</title>
+  <style>
+  #layout { display:flex; gap:40px; align-items:center; }
+  #left { flex: 1; }
+  #right { width: 360px; display:flex; justify-content:center; align-items:center; }
+  #qimg { display:none; max-width:360px; max-height:240px; border-radius:10px; }
+</style>
+
 </head>
 <body>
   <h1>🧠 QuizMind</h1>
@@ -15,11 +22,18 @@
 
   <button id="start">Start</button>
 
-  <h3 id="q"></h3>
-  <img id="qimg" src ="" style="display:none; max-width:320px; border-radius:10px; margin:10px 0;">
+  <div id="layout">
+  <div id="left">
+    <h3 id="q"></h3>
+    <div id="opts"></div>
+    <p id="res"></p>
+  </div>
 
-  <div id="opts"></div>
-  <p id="res"></p>
+  <div id="right">
+    <img id="qimg" src="" alt="" />
+  </div>
+</div>
+
 
   <script src="/static/app.js"></script>
 </body>
