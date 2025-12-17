@@ -4,6 +4,37 @@ let score = 0;
 let timerId = null;
 let timeLeft = 10;
 let answered = false;
+function stopTimer() {
+  if (timerId !== null) {
+    clearInterval(timerId);
+    timerId = null;
+  }
+}
+
+function startTimer() {
+  stopTimer();
+
+  answered = false;
+  timeLeft = 10;
+
+  const timerEl = document.getElementById("timer");
+  timerEl.textContent = "Zeit: " + timeLeft;
+
+  timerId = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = "Zeit: " + timeLeft;
+
+    if (timeLeft <= 0) {
+      stopTimer();
+      if (answered) return;
+
+      answered = true;
+      document.getElementById("res").textContent = "⏰ Zeit abgelaufen!";
+      i++;
+      setTimeout(show, 600);
+    }
+  }, 1000);
+}
 
 
 document.getElementById("start").onclick = async () => {
@@ -67,7 +98,12 @@ function show() {
   const opts = document.getElementById("opts");
   opts.innerHTML = "";
 
-  const answers = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
+// WRONG kann manchmal undefined oder String sein -> wir machen es sicher
+const wrongRaw = q.wrong ?? q.wrongs ?? q.wrong_answers ?? q.wrongAnswers ?? [];
+const wrong = Array.isArray(wrongRaw) ? wrongRaw : [wrongRaw];
+
+const answers = [q.correct, ...wrong].filter(Boolean);
+startTimer();
 
   answers.forEach(a => {
     const b = document.createElement("button");
