@@ -1,6 +1,10 @@
 let questions = [];
 let i = 0;
 let score = 0;
+let timerId = null;
+let timeLeft = 10;
+let answered = false;
+
 
 document.getElementById("start").onclick = async () => {
   const level = document.getElementById("level").value;
