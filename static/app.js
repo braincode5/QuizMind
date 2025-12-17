@@ -1,11 +1,15 @@
 let questions = [];
 let i = 0;
+let score = 0;
 
 document.getElementById("start").onclick = async () => {
   const level = document.getElementById("level").value;
   const r = await fetch(`/api/questions?level=${level}`);
   questions = (await r.json()).questions;
   i = 0;
+  score = 0;
+document.getElementById("score").textContent = "Punkte: " + score;
+
   show();
 };
 
@@ -28,11 +32,17 @@ if (q.image) {
     const b = document.createElement("button");
     b.textContent = o;
     b.onclick = () => {
-      document.getElementById("res").textContent =
-        idx === q.correctIndex ? "✅ Richtig" : "❌ Falsch";
-      i++;
-      setTimeout(show, 800);
-    };
+  const correct = idx === q.correctIndex;
+
+  if (correct) score++;
+  document.getElementById("score").textContent = "Punkte: " + score;
+
+  document.getElementById("res").textContent = correct ? "✅ Richtig" : "❌ Falsch";
+
+  i++;
+  setTimeout(show, 800);
+};
+
     d.appendChild(b);
   });
 }
