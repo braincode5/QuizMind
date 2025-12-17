@@ -23,6 +23,7 @@ QUESTIONS = {
         {     
              "id": "geo_002",
              "question": "Was ist die Hauptstadt von Albanien?",
+             "image": "static/images/Tirana.png",
              "correct": "Tirana",
              "wrong": ["Elbasan", "Vlora", "Saranda", "Velipoja", "Kukes"]
         },
