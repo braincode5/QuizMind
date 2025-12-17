@@ -16,27 +16,28 @@ QUESTIONS = {
         {
             "id": "geo_001",
             "question": "Was ist die Hauptstadt von Deutschland?",
-            "image": "/static/images/berlin.png",
+            "image": "/static/images/Berlin.png",
             "correct": "Berlin",
             "wrong": ["München", "Hamburg", "Köln", "Frankfurt", "Stuttgart"]
         },
         {     
              "id": "geo_002",
              "question": "Was ist die Hauptstadt von Albanien?",
-             "image": "static/images/Tirana.png",
+             "image": "/static/images/Tirana.png",
              "correct": "Tirana",
              "wrong": ["Elbasan", "Vlora", "Saranda", "Velipoja", "Kukes"]
         },
         {
              "id": "geo_003",
              "question": "Wie viele Einwohner hat Deutschland?",
-             "image": "static/images/Deutschland.png",
+             "image": "/static/images/Deutschland.png",
              "correct": "83 Millionen",
              "wrong": ["85 Millionen", "90 Millionen", "80 Millionen", "75 Millionen", "81 Millionen"]
         },
         {
             "id": "geo_004",
             "question": "Was ist die Hauptstadt von Frankreich?",
+            "image": "/static/images/Paris.png",
             "correct": "Paris",
             "wrong": ["Marseille", "Lyon", "Touluse", "Nizza", "Nantes"]
 
