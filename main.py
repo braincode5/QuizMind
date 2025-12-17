@@ -30,6 +30,7 @@ QUESTIONS = {
         {
              "id": "geo_003",
              "question": "Wie viele Einwohner hat Deutschland?",
+             "image": "static/images/Deutschland.png",
              "correct": "83 Millionen",
              "wrong": ["85 Millionen", "90 Millionen", "80 Millionen", "75 Millionen", "81 Millionen"]
         },
