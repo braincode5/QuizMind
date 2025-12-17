@@ -18,45 +18,78 @@ document.getElementById("score").textContent = "Punkte: " + score;
 };
 
 function show() {
+  // ENDE
   if (i >= questions.length) {
-  document.getElementById("q").textContent =
-  `Fertig! Du hast ${score} von ${questions.length} Punkten erreicht 🎉`;
+    document.getElementById("q").textContent =
+      `🎉 Fertig! Du hast ${score} von ${questions.length} Punkten erreicht`;
+    document.getElementById("opts").innerHTML = "";
+    document.getElementById("res").textContent = "";
+    document.getElementById("timer").textContent = "";
+    const img = document.getElementById("qimg");
+    img.style.display = "none";
+    return;
+  }
 
-  document.getElementById("opts").innerHTML = "";
-  document.getElementById("res").textContent = "";
-  const img = document.getElementById("qimg");
-  img.style.display = "none";
-  return;
-}
+  answered = false;
 
+  // TIMER RESET
+  if (timerId) clearInterval(timerId);
+  timeLeft = 10;
+  document.getElementById("timer").textContent = "Zeit: 10s";
+
+  timerId = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").textContent = "Zeit: " + timeLeft + "s";
+
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+      if (answered) return;
+
+      answered = true;
+      document.getElementById("res").textContent = "⏰ Zeit abgelaufen";
+      i++;
+      setTimeout(show, 800);
+    }
+  }, 1000);
+
+  // FRAGE LADEN
   const q = questions[i];
   document.getElementById("q").textContent = q.question;
+
   const img = document.getElementById("qimg");
-if (q.image) {
-  img.src = q.image;
-  img.style.display = "block";
-} else {
-  img.style.display = "none";
-  img.src = "";
-}
-  const d = document.getElementById("opts");
-  d.innerHTML = "";
-  
-  q.options.forEach((o, idx) => {
+  if (q.image) {
+    img.src = q.image;
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+  }
+
+  const opts = document.getElementById("opts");
+  opts.innerHTML = "";
+
+  const answers = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
+
+  answers.forEach(a => {
     const b = document.createElement("button");
-    b.textContent = o;
+    b.textContent = a;
+
     b.onclick = () => {
-  const correct = idx === q.correctIndex;
+      if (answered) return;
+      answered = true;
+      clearInterval(timerId);
 
-  if (correct) score++;
-  document.getElementById("score").textContent = "Punkte: " + score;
+      if (a === q.correct) {
+        score++;
+        document.getElementById("res").textContent = "✅ Richtig";
+      } else {
+        document.getElementById("res").textContent = "❌ Falsch";
+      }
 
-  document.getElementById("res").textContent = correct ? "✅ Richtig" : "❌ Falsch";
+      document.getElementById("score").textContent = "Punkte: " + score;
+      i++;
+      setTimeout(show, 800);
+    };
 
-  i++;
-  setTimeout(show, 800);
-};
-
-    d.appendChild(b);
+    opts.appendChild(b);
   });
 }
