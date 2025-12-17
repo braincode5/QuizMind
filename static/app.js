@@ -1,55 +1,40 @@
 let questions = [];
 let i = 0;
 let score = 0;
+
 let timerId = null;
 let timeLeft = 10;
 let answered = false;
-function stopTimer() {
-  if (timerId !== null) {
-    clearInterval(timerId);
-    timerId = null;
-  }
-}
-
-function startTimer() {
-  stopTimer();
-
-  answered = false;
-  timeLeft = 10;
-
-  const timerEl = document.getElementById("timer");
-  timerEl.textContent = "Zeit: " + timeLeft;
-
-  timerId = setInterval(() => {
-    timeLeft--;
-    timerEl.textContent = "Zeit: " + timeLeft;
-
-    if (timeLeft <= 0) {
-      stopTimer();
-      if (answered) return;
-
-      answered = true;
-      document.getElementById("res").textContent = "⏰ Zeit abgelaufen!";
-      i++;
-      setTimeout(show, 600);
-    }
-  }, 1000);
-}
-
 
 document.getElementById("start").onclick = async () => {
   const level = document.getElementById("level").value;
+
   const r = await fetch(`/api/questions?level=${level}`);
-  questions = (await r.json()).questions;
+  const data = await r.json();
+
+  questions = data.questions || [];
   i = 0;
   score = 0;
-document.getElementById("score").textContent = "Punkte: " + score;
+
+  document.getElementById("score").textContent = "Punkte: " + score;
+  document.getElementById("res").textContent = "";
 
   show();
 };
 
 function show() {
-  // ENDE
+  if (timerId) clearInterval(timerId);
+
+  if (!questions || questions.length === 0) {
+    document.getElementById("q").textContent = "Keine Fragen gefunden.";
+    document.getElementById("opts").innerHTML = "";
+    document.getElementById("res").textContent = "";
+    document.getElementById("timer").textContent = "";
+    const img = document.getElementById("qimg");
+    img.style.display = "none";
+    return;
+  }
+
   if (i >= questions.length) {
     document.getElementById("q").textContent =
       `🎉 Fertig! Du hast ${score} von ${questions.length} Punkten erreicht`;
@@ -62,30 +47,12 @@ function show() {
   }
 
   answered = false;
-
-  // TIMER RESET
-  if (timerId) clearInterval(timerId);
   timeLeft = 10;
-  document.getElementById("timer").textContent = "Zeit: 10s";
 
-  timerId = setInterval(() => {
-    timeLeft--;
-    document.getElementById("timer").textContent = "Zeit: " + timeLeft + "s";
-
-    if (timeLeft <= 0) {
-      clearInterval(timerId);
-      if (answered) return;
-
-      answered = true;
-      document.getElementById("res").textContent = "⏰ Zeit abgelaufen";
-      i++;
-      setTimeout(show, 800);
-    }
-  }, 1000);
-
-  // FRAGE LADEN
   const q = questions[i];
-  document.getElementById("q").textContent = q.question;
+
+  document.getElementById("q").textContent = q.question ?? "";
+  document.getElementById("res").textContent = "";
 
   const img = document.getElementById("qimg");
   if (q.image) {
@@ -95,23 +62,23 @@ function show() {
     img.style.display = "none";
   }
 
+  const wrongRaw = q.wrong ?? q.wrongs ?? q.wrong_answers ?? [];
+  const wrong = Array.isArray(wrongRaw) ? wrongRaw : [String(wrongRaw)];
+  let answers = [q.correct, ...wrong].filter(Boolean);
+
+  answers = answers.sort(() => Math.random() - 0.5);
+
   const opts = document.getElementById("opts");
   opts.innerHTML = "";
 
-// WRONG kann manchmal undefined oder String sein -> wir machen es sicher
-const wrongRaw = q.wrong ?? q.wrongs ?? q.wrong_answers ?? q.wrongAnswers ?? [];
-const wrong = Array.isArray(wrongRaw) ? wrongRaw : [wrongRaw];
-
-const answers = [q.correct, ...wrong].filter(Boolean);
-startTimer();
-
-  answers.forEach(a => {
+  answers.forEach((a) => {
     const b = document.createElement("button");
     b.textContent = a;
 
     b.onclick = () => {
       if (answered) return;
       answered = true;
+
       clearInterval(timerId);
 
       if (a === q.correct) {
@@ -122,10 +89,36 @@ startTimer();
       }
 
       document.getElementById("score").textContent = "Punkte: " + score;
+
       i++;
       setTimeout(show, 800);
     };
 
     opts.appendChild(b);
   });
+
+  document.getElementById("timer").textContent = `Zeit: ${timeLeft}s`;
+
+  timerId = setInterval(() => {
+    if (answered) return;
+
+    timeLeft--;
+    document.getElementById("timer").textContent = `Zeit: ${timeLeft}s`;
+
+    if (timeLeft <= 0) {
+      answered = true;
+      clearInterval(timerId);
+
+      document.getElementById("res").textContent = "⏰ Zeit abgelaufen!";
+
+      document.querySelectorAll("#opts button").forEach((btn) => {
+        btn.disabled = true;
+      });
+
+      i++;
+      setTimeout(show, 800);
+    }
+  }, 1000);
 }
+
+
