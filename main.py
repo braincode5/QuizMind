@@ -49,6 +49,7 @@ QUESTIONS = {
         {
             "id": "wis_001",
             "question": "Woraus besteht Wasser?",
+            "image": "/static/images/Wasser.png",
             "correct": "H2O",
             "wrong": ["CO2", "O2", "NaCl", "H2", "CH4"]
         }
