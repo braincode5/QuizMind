@@ -6,38 +6,67 @@ let timerId = null;
 let timeLeft = 10;
 let answered = false;
 
+const QUESTION_SECONDS = 10;
+
+function setTimerText() {
+  const el = document.getElementById("timer");
+  if (!el) return;
+  el.textContent = `Zeit: ${timeLeft}s`;
+}
+
+function stopTimer() {
+  if (timerId !== null) {
+    clearInterval(timerId);
+    timerId = null;
+  }
+}
+
+function startTimer() {
+  stopTimer();
+  timeLeft = QUESTION_SECONDS;
+  setTimerText();
+
+  timerId = setInterval(() => {
+    timeLeft -= 1;
+    setTimerText();
+
+    if (timeLeft <= 0) {
+      stopTimer();
+
+      if (!answered) {
+        answered = true;
+        document.getElementById("res").textContent = "⏰ Zeit abgelaufen!";
+        // Buttons deaktivieren
+        document.querySelectorAll("#opts button").forEach((b) => (b.disabled = true));
+        // nächste Frage
+        i += 1;
+        setTimeout(show, 800);
+      }
+    }
+  }, 1000);
+}
+
 document.getElementById("start").onclick = async () => {
   const level = document.getElementById("level").value;
 
-  const r = await fetch(`/api/questions?level=${level}`);
+  const r = await fetch(`/api/questions?level=${encodeURIComponent(level)}`);
   const data = await r.json();
 
   questions = data.questions || [];
   i = 0;
   score = 0;
 
-  document.getElementById("score").textContent = "Punkte: " + score;
+  document.getElementById("score").textContent = `Punkte: ${score} / ${questions.length}`;
   document.getElementById("res").textContent = "";
 
   show();
 };
 
 function show() {
-  if (timerId) clearInterval(timerId);
-
-  if (!questions || questions.length === 0) {
-    document.getElementById("q").textContent = "Keine Fragen gefunden.";
-    document.getElementById("opts").innerHTML = "";
-    document.getElementById("res").textContent = "";
-    document.getElementById("timer").textContent = "";
-    const img = document.getElementById("qimg");
-    img.style.display = "none";
-    return;
-  }
-
+  // Ende
   if (i >= questions.length) {
-    document.getElementById("q").textContent =
-      `🎉 Fertig! Du hast ${score} von ${questions.length} Punkten erreicht`;
+    stopTimer();
+    document.getElementById("q").textContent = `🎉 Fertig! Du hast ${score} von ${questions.length} Punkten erreicht`;
     document.getElementById("opts").innerHTML = "";
     document.getElementById("res").textContent = "";
     document.getElementById("timer").textContent = "";
@@ -47,13 +76,14 @@ function show() {
   }
 
   answered = false;
-  timeLeft = 10;
+  document.getElementById("res").textContent = "";
 
   const q = questions[i];
 
-  document.getElementById("q").textContent = q.question ?? "";
-  document.getElementById("res").textContent = "";
+  // Frage text
+  document.getElementById("q").textContent = q.question;
 
+  // Bild
   const img = document.getElementById("qimg");
   if (q.image) {
     img.src = q.image;
@@ -62,63 +92,39 @@ function show() {
     img.style.display = "none";
   }
 
-  const wrongRaw = q.wrong ?? q.wrongs ?? q.wrong_answers ?? [];
-  const wrong = Array.isArray(wrongRaw) ? wrongRaw : [String(wrongRaw)];
-  let answers = [q.correct, ...wrong].filter(Boolean);
-
-  answers = answers.sort(() => Math.random() - 0.5);
-
+  // Optionen (WICHTIG: kommt aus main.py als q.options)
   const opts = document.getElementById("opts");
   opts.innerHTML = "";
 
-  answers.forEach((a) => {
+  const answers = Array.isArray(q.options) ? q.options : [];
+  answers.forEach((answerText, idx) => {
     const b = document.createElement("button");
-    b.textContent = a;
+    b.textContent = answerText;
 
     b.onclick = () => {
       if (answered) return;
       answered = true;
+      stopTimer();
 
-      clearInterval(timerId);
+      // Buttons deaktivieren
+      document.querySelectorAll("#opts button").forEach((btn) => (btn.disabled = true));
 
-      if (a === q.correct) {
-        score++;
+      if (idx === q.correctIndex) {
+        score += 1;
         document.getElementById("res").textContent = "✅ Richtig";
       } else {
         document.getElementById("res").textContent = "❌ Falsch";
       }
 
-      document.getElementById("score").textContent = "Punkte: " + score;
+      document.getElementById("score").textContent = `Punkte: ${score} / ${questions.length}`;
 
-      i++;
+      i += 1;
       setTimeout(show, 800);
     };
 
     opts.appendChild(b);
   });
 
-  document.getElementById("timer").textContent = `Zeit: ${timeLeft}s`;
-
-  timerId = setInterval(() => {
-    if (answered) return;
-
-    timeLeft--;
-    document.getElementById("timer").textContent = `Zeit: ${timeLeft}s`;
-
-    if (timeLeft <= 0) {
-      answered = true;
-      clearInterval(timerId);
-
-      document.getElementById("res").textContent = "⏰ Zeit abgelaufen!";
-
-      document.querySelectorAll("#opts button").forEach((btn) => {
-        btn.disabled = true;
-      });
-
-      i++;
-      setTimeout(show, 800);
-    }
-  }, 1000);
+  // Timer pro Frage starten
+  startTimer();
 }
-
-

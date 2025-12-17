@@ -1,109 +1,46 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>QuizMind</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuizMind</title>
 
-  <style>
-    body { font-family: Arial, sans-serif; font-size: 18px; margin: 20px; }
+    <style>
+      body { font-family: Arial, sans-serif; margin: 30px; }
+      #layout { display: flex; gap: 40px; align-items: flex-start; }
+      #right { margin-left: auto; }
+      #qimg { max-width: 420px; border-radius: 14px; display: none; }
+      #opts button { margin: 6px 6px 0 0; cursor: pointer; }
+      #res { font-size: 22px; margin-top: 12px; }
+      #timer { font-size: 20px; font-weight: bold; margin-top: 12px; }
+    </style>
+  </head>
 
-    h1 { font-size: 44px; margin: 0 0 14px; }
+  <body>
+    <h1>🧠 QuizMind</h1>
 
-    #layout { display: flex; gap: 40px; align-items: center; }
+    <div id="score">Punkte: 0 / 0</div>
+    <div id="timer"></div>
 
-    #left { flex: 1; min-width: 320px; }
+    <div id="layout">
+      <div id="left">
+        <select id="level">
+          <option value="easy">Einfach</option>
+          <option value="normal">Normal</option>
+          <option value="hard">Schwer</option>
+        </select>
+        <button id="start">Start</button>
 
-    #right { width: 420px; display: flex; justify-content: center; align-items: center; }
+        <h2 id="q"></h2>
+        <div id="opts"></div>
+        <div id="res"></div>
+      </div>
 
-    /* Bild rechts mittig */
-    #qimg {
-      display: none;
-      max-width: 420px;
-      max-height: 240px;
-      border-radius: 12px;
-      object-fit: cover;
-    }
-
-    #score { font-size: 20px; font-weight: bold; margin: 12px 0 16px; }
-
-    #q { font-size: 30px; margin: 20px 0 10px; }
-
-    #opts button {
-      font-size: 20px;
-      padding: 10px 14px;
-      margin: 6px 6px 0 0;
-      cursor: pointer;
-    }
-
-    #res { font-size: 22px; margin-top: 12px; }
-   #timer { font-size: 20px; font-weight: bold; margin: 6px 0 14px; } 
-
-  </style>
-  
-
-</head>
-
-<body>
-  <h1>🧠 QuizMind</h1>
-
-  <div id="score">Punkte: 0 / 0</div>
-  <div id="timer">Zeit: 10</div>
-
-  <div id="layout">
-    <div id="left">
-      <select id="level">
-        <option value="easy">Einfach</option>
-        <option value="normal">Normal</option>
-        <option value="hard">Schwer</option>
-      </select>
-
-      <button id="start">Start</button>
-
-      <h3 id="q"></h3>
-      <div id="opts"></div>
-      <p id="res"></p>
+      <div id="right">
+        <img id="qimg" alt="Fragebild" />
+      </div>
     </div>
 
-    <div id="right">
-      <img id="qimg" alt="Fragebild" />
-    </div>
-  </div>
-
-  <script src="/static/app.js"></script>
-
-  <!-- Punktesystem (funktioniert ohne app.js zu ändern) -->
-  <script>
-    // Wir beobachten den Text von #res (✅ Richtig / ❌ Falsch) und zählen Punkte.
-    let total = 0;
-    let points = 0;
-
-    const scoreEl = document.getElementById("score");
-    const resEl = document.getElementById("res");
-
-    function updateScore() {
-      scoreEl.textContent = `Punkte: ${points} / ${total}`;
-    }
-
-    // Wenn du "Start" drückst: Score zurücksetzen
-    document.getElementById("start").addEventListener("click", () => {
-      total = 0;
-      points = 0;
-      updateScore();
-    });
-
-    // Beobachtet Änderungen am Ergebnistext
-    const obs = new MutationObserver(() => {
-      const t = (resEl.textContent || "").trim();
-      if (t.includes("Richtig") || t.includes("Falsch")) {
-        total += 1;
-        if (t.includes("Richtig")) points += 1;
-        updateScore();
-      }
-    });
-
-    obs.observe(resEl, { childList: true, characterData: true, subtree: true });
-    updateScore();
-  </script>
-</body>
+    <script src="/static/app.js"></script>
+  </body>
 </html>
