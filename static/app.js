@@ -14,7 +14,17 @@ document.getElementById("score").textContent = "Punkte: " + score;
 };
 
 function show() {
-  if (i >= questions.length) return;
+  if (i >= questions.length) {
+  document.getElementById("q").textContent =
+  `Fertig! Du hast ${score} von ${questions.length} Punkten erreicht 🎉`;
+
+  document.getElementById("opts").innerHTML = "";
+  document.getElementById("res").textContent = "";
+  const img = document.getElementById("qimg");
+  img.style.display = "none";
+  return;
+}
+
   const q = questions[i];
   document.getElementById("q").textContent = q.question;
   const img = document.getElementById("qimg");
